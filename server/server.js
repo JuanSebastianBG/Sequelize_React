@@ -30,6 +30,39 @@ app.post("/api/usuarios", async (req, res) => {
   }
 });
 
+app.put("/api/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, email, edad } = req.body;
+
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    await usuario.update({ name, email, edad });
+    res.json(usuario);
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    await usuario.destroy();
+    res.status(204).send(); // No devuelve contenido
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Inicia el servidor
 app.listen(3001, () => {
   console.log("Servidor backend corriendo en http://localhost:3001");
